@@ -10,28 +10,28 @@ Attribute VB_Exposed = False
 Option Explicit
 
 
-'Настройки таблицы геодезического контроля
-Private Const mask_file$ = "реестр геодезия"
+'РќР°СЃС‚СЂРѕР№РєРё С‚Р°Р±Р»РёС†С‹ РіРµРѕРґРµР·РёС‡РµСЃРєРѕРіРѕ РєРѕРЅС‚СЂРѕР»СЏ
+Private Const mask_file$ = "СЂРµРµСЃС‚СЂ РіРµРѕРґРµР·РёСЏ"
 Private Const sFolder$ = "C:\Users\SobyaninAV\Desktop"
 
-Private Const sheet_name$ = "Реестр"    'Имя листа на которой таблица
+Private Const sheet_name$ = "Р РµРµСЃС‚СЂ"    'РРјСЏ Р»РёСЃС‚Р° РЅР° РєРѕС‚РѕСЂРѕР№ С‚Р°Р±Р»РёС†Р°
 Private Const start_row As Byte = 38    '
 
-'Столбцы таблицы геодезия сводная:
-Private Const L_Title$ = "B" 'Титул
+'РЎС‚РѕР»Р±С†С‹ С‚Р°Р±Р»РёС†С‹ РіРµРѕРґРµР·РёСЏ СЃРІРѕРґРЅР°СЏ:
+Private Const L_Title$ = "B" 'РўРёС‚СѓР»
 Private Const L_DP$ = "D"    'DP
-Private Const L_Wght$ = "L"  'Масса
+Private Const L_Wght$ = "L"  'РњР°СЃСЃР°
 
 
 
-'Переменные класса:
+'РџРµСЂРµРјРµРЅРЅС‹Рµ РєР»Р°СЃСЃР°:
 Private sFileName$
 Private mass_data()
 Private dict_data As Object
 Private WB As Excel.Workbook
 
 
-'Конструктор и деструктор класса
+'РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ Рё РґРµСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР°
 Private Sub Class_Initialize()
     Set dict_data = CreateObject("Scripting.Dictionary")
 End Sub
@@ -40,7 +40,7 @@ Private Sub Class_Terminate()
 End Sub
 
 
-'Номера столбцов таблицы
+'РќРѕРјРµСЂР° СЃС‚РѕР»Р±С†РѕРІ С‚Р°Р±Р»РёС†С‹
 Private Property Get cNumTitle%()
     cNumTitle = Columns(L_Title).Column
 End Property
@@ -53,12 +53,12 @@ End Property
 
 
 
-'Словарь сводной таблицы
+'РЎР»РѕРІР°СЂСЊ СЃРІРѕРґРЅРѕР№ С‚Р°Р±Р»РёС†С‹
 Public Property Get DictData() As Object
     Set DictData = dict_data
 End Property
 
-'Загрузка данных в словарь данных из таблицы мастер файла
+'Р—Р°РіСЂСѓР·РєР° РґР°РЅРЅС‹С… РІ СЃР»РѕРІР°СЂСЊ РґР°РЅРЅС‹С… РёР· С‚Р°Р±Р»РёС†С‹ РјР°СЃС‚РµСЂ С„Р°Р№Р»Р°
 Public Sub LoadData()
     
     Dim OPWB As New CL_OPENFILE
@@ -71,7 +71,7 @@ Public Sub LoadData()
     
     Set WB = OPWB.GetWorkBook
     
-    Application.StatusBar = "Загрузка данных из таблицы по геодезии..."
+    Application.StatusBar = "Р—Р°РіСЂСѓР·РєР° РґР°РЅРЅС‹С… РёР· С‚Р°Р±Р»РёС†С‹ РїРѕ РіРµРѕРґРµР·РёРё..."
     Debug.Print Application.StatusBar: DoEvents
     
     'LoadDataInMass
@@ -86,13 +86,13 @@ Public Sub LoadData()
     
 End Sub
 
-'Чтение данных из таблицы
+'Р§С‚РµРЅРёРµ РґР°РЅРЅС‹С… РёР· С‚Р°Р±Р»РёС†С‹
 Private Sub LoadDataInMass()
     mass_data = WB.Worksheets(sheet_name).UsedRange.Value
 End Sub
 
 
-'Загрузка данных в словарь
+'Р—Р°РіСЂСѓР·РєР° РґР°РЅРЅС‹С… РІ СЃР»РѕРІР°СЂСЊ
 Private Sub LoadDataInDict()
     Dim sTitle$, sDP$, wght#, RG As Range, dict As Object
     
@@ -137,7 +137,7 @@ Private Sub LoadDpData(ByRef RG As Range)
     
 End Sub
 
-'Поиск даты в строке материала
+'РџРѕРёСЃРє РґР°С‚С‹ РІ СЃС‚СЂРѕРєРµ РјР°С‚РµСЂРёР°Р»Р°
 Private Property Get GetTitle$(ByRef sTXT)
     Dim objExec As Object, tmpstr$
     Set objExec = RegExp(sTXT, "[A-Z]\d-\d{2}-?[\d\w]*")
@@ -148,11 +148,11 @@ Private Property Get GetTitle$(ByRef sTXT)
     Set objExec = Nothing
 End Property
 
-'Свойство создания (настроек) объекта регулярных выражений
+'РЎРІРѕР№СЃС‚РІРѕ СЃРѕР·РґР°РЅРёСЏ (РЅР°СЃС‚СЂРѕРµРє) РѕР±СЉРµРєС‚Р° СЂРµРіСѓР»СЏСЂРЅС‹С… РІС‹СЂР°Р¶РµРЅРёР№
 Private Property Get RegExp(ByRef sTXT, ByRef sMask$) As Object
     With CreateObject("VBScript.RegExp")
-        .Global = True 'Поиск по всему тексту
-        .Pattern = sMask 'Шаблон поиска
+        .Global = True 'РџРѕРёСЃРє РїРѕ РІСЃРµРјСѓ С‚РµРєСЃС‚Сѓ
+        .Pattern = sMask 'РЁР°Р±Р»РѕРЅ РїРѕРёСЃРєР°
         .IgnoreCase = True
         Set RegExp = .Execute(sTXT)
     End With
@@ -162,7 +162,7 @@ End Property
 
 
 '
-''Расчет значений по геодезии
+''Р Р°СЃС‡РµС‚ Р·РЅР°С‡РµРЅРёР№ РїРѕ РіРµРѕРґРµР·РёРё
 'Private Sub CalculateValueInDP()
 '    Dim iTitle, iDP
 '    For Each iTitle In dictDP.Items
@@ -175,7 +175,7 @@ End Property
 '    Next
 'End Sub
 '
-''Ведется СМР '"F" => "=D5-G5-ЕСЛИ(H5="н/п";D5;H5)"
+''Р’РµРґРµС‚СЃСЏ РЎРњР  '"F" => "=D5-G5-Р•РЎР›Р(H5="РЅ/Рї";D5;H5)"
 'Private Property Get GetWorkIsUnderway#(ByRef dict)
 '    Dim val#
 '    With dict
@@ -184,7 +184,7 @@ End Property
 '    End With
 'End Property
 '
-''Готовая физика под геодезию '"G" => "=ЕСЛИ(D5/C5>0,8;D5-ЕСЛИ(H5="н/п";D5;H5);0)"
+''Р“РѕС‚РѕРІР°СЏ С„РёР·РёРєР° РїРѕРґ РіРµРѕРґРµР·РёСЋ '"G" => "=Р•РЎР›Р(D5/C5>0,8;D5-Р•РЎР›Р(H5="РЅ/Рї";D5;H5);0)"
 'Private Property Get isDelivDivMont(ByRef dict) As Boolean
 '    With dict
 '        If .Item("C") = 0 Then Exit Property
@@ -203,7 +203,7 @@ End Property
 '    End If
 'End Property
 '
-''Данные весов из таблицы
+''Р”Р°РЅРЅС‹Рµ РІРµСЃРѕРІ РёР· С‚Р°Р±Р»РёС†С‹
 'Private Property Get GetGeoSurvey#(ByRef mass, ByRef q&)
 '    GetGeoSurvey = mass(q, NumGeoSurvey) * 1000
 'End Property

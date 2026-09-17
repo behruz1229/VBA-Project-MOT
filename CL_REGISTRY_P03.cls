@@ -10,44 +10,44 @@ Attribute VB_Exposed = False
 Option Explicit
 
 '=============================================================
-'          Класс создания приложения к акту
-'          освидетельствования скрытых работ №3
+'          РљР»Р°СЃСЃ СЃРѕР·РґР°РЅРёСЏ РїСЂРёР»РѕР¶РµРЅРёСЏ Рє Р°РєС‚Сѓ
+'          РѕСЃРІРёРґРµС‚РµР»СЊСЃС‚РІРѕРІР°РЅРёСЏ СЃРєСЂС‹С‚С‹С… СЂР°Р±РѕС‚ в„–3
 '=============================================================
 
 
-'Столбцы
+'РЎС‚РѕР»Р±С†С‹
 Private Const L_PP$ = "A"
 Private Const L_Mat$ = "B"
 Private Const L_Doc$ = "C"
 Private Const L_Akt$ = "D"
 
-'Настройка таблицы
+'РќР°СЃС‚СЂРѕР№РєР° С‚Р°Р±Р»РёС†С‹
 Private Const start_row As Byte = 5
 
-'Переменные класса
+'РџРµСЂРµРјРµРЅРЅС‹Рµ РєР»Р°СЃСЃР°
 Private mass_data()
 Private dict_data As Object
 Private dict_ic As Object
 Private SH As Excel.Worksheet
 Private OtherFunction As New CL_OTHERFUN
-Private coll_function As New Collection   'Коллекция функциональных обязанностей
-Private coll_emploee As New Collection    'Коллекция Фамилия И.О. подписантов
+Private coll_function As New Collection   'РљРѕР»Р»РµРєС†РёСЏ С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅС‹С… РѕР±СЏР·Р°РЅРЅРѕСЃС‚РµР№
+Private coll_emploee As New Collection    'РљРѕР»Р»РµРєС†РёСЏ Р¤Р°РјРёР»РёСЏ Р.Рћ. РїРѕРґРїРёСЃР°РЅС‚РѕРІ
 
 
-'Конструктор и деструктор класса
+'РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ Рё РґРµСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР°
 Private Sub Class_Initialize()
     
-    coll_function.Add "Представитель застройщика, технического заказчика, лица, ответственного за эксплуатацию здания, сооружения, или регионального оператора по вопросам строительного контроля"
-    coll_function.Add "Представитель лица, осуществляющего строительство, реконструкцию, капитальный ремонт"
-    coll_function.Add "Представитель лица, осуществляющего строительство, реконструкцию, капитальный ремонт, по вопросам строительного контроля"
+    coll_function.Add "РџСЂРµРґСЃС‚Р°РІРёС‚РµР»СЊ Р·Р°СЃС‚СЂРѕР№С‰РёРєР°, С‚РµС…РЅРёС‡РµСЃРєРѕРіРѕ Р·Р°РєР°Р·С‡РёРєР°, Р»РёС†Р°, РѕС‚РІРµС‚СЃС‚РІРµРЅРЅРѕРіРѕ Р·Р° СЌРєСЃРїР»СѓР°С‚Р°С†РёСЋ Р·РґР°РЅРёСЏ, СЃРѕРѕСЂСѓР¶РµРЅРёСЏ, РёР»Рё СЂРµРіРёРѕРЅР°Р»СЊРЅРѕРіРѕ РѕРїРµСЂР°С‚РѕСЂР° РїРѕ РІРѕРїСЂРѕСЃР°Рј СЃС‚СЂРѕРёС‚РµР»СЊРЅРѕРіРѕ РєРѕРЅС‚СЂРѕР»СЏ"
+    coll_function.Add "РџСЂРµРґСЃС‚Р°РІРёС‚РµР»СЊ Р»РёС†Р°, РѕСЃСѓС‰РµСЃС‚РІР»СЏСЋС‰РµРіРѕ СЃС‚СЂРѕРёС‚РµР»СЊСЃС‚РІРѕ, СЂРµРєРѕРЅСЃС‚СЂСѓРєС†РёСЋ, РєР°РїРёС‚Р°Р»СЊРЅС‹Р№ СЂРµРјРѕРЅС‚"
+    coll_function.Add "РџСЂРµРґСЃС‚Р°РІРёС‚РµР»СЊ Р»РёС†Р°, РѕСЃСѓС‰РµСЃС‚РІР»СЏСЋС‰РµРіРѕ СЃС‚СЂРѕРёС‚РµР»СЊСЃС‚РІРѕ, СЂРµРєРѕРЅСЃС‚СЂСѓРєС†РёСЋ, РєР°РїРёС‚Р°Р»СЊРЅС‹Р№ СЂРµРјРѕРЅС‚, РїРѕ РІРѕРїСЂРѕСЃР°Рј СЃС‚СЂРѕРёС‚РµР»СЊРЅРѕРіРѕ РєРѕРЅС‚СЂРѕР»СЏ"
     
-    coll_emploee.Add "Ефимчук А.А."
-    'coll_emploee.Add "Жигарев П.В."
-    coll_emploee.Add "Васильев О.А."
-    'coll_emploee.Add "Перевощиков Д.А."
-    coll_emploee.Add "Середа А.А."
+    coll_emploee.Add "Р•С„РёРјС‡СѓРє Рђ.Рђ."
+    'coll_emploee.Add "Р–РёРіР°СЂРµРІ Рџ.Р’."
+    coll_emploee.Add "Р’Р°СЃРёР»СЊРµРІ Рћ.Рђ."
+    'coll_emploee.Add "РџРµСЂРµРІРѕС‰РёРєРѕРІ Р”.Рђ."
+    coll_emploee.Add "РЎРµСЂРµРґР° Рђ.Рђ."
     
-    'Массив данных таблицы
+    'РњР°СЃСЃРёРІ РґР°РЅРЅС‹С… С‚Р°Р±Р»РёС†С‹
     Set dict_data = CreateObject("Scripting.Dictionary")
     Dim THWB As New CL_THISWORKBOOK
     mass_data = THWB.MassData
@@ -63,22 +63,22 @@ Private Sub Class_Terminate()
     Set coll_emploee = Nothing
 End Sub
 
-'Номера столбцов таблицы
+'РќРѕРјРµСЂР° СЃС‚РѕР»Р±С†РѕРІ С‚Р°Р±Р»РёС†С‹
 Private Property Get cNumPP%()
     cNumPP = Columns(L_PP).Column
 End Property
 
-'Установка данных входного контроля
+'РЈСЃС‚Р°РЅРѕРІРєР° РґР°РЅРЅС‹С… РІС…РѕРґРЅРѕРіРѕ РєРѕРЅС‚СЂРѕР»СЏ
 Private Property Set DictDataIC(ByRef dict As Object)
     Set dict_ic = dict
 End Property
 
-'Последняя строка данных в таблице
+'РџРѕСЃР»РµРґРЅСЏСЏ СЃС‚СЂРѕРєР° РґР°РЅРЅС‹С… РІ С‚Р°Р±Р»РёС†Рµ
 Private Property Get cnt_row&()
     cnt_row = SH.Cells(Rows.Count, cNumPP).End(xlUp).Row
 End Property
 
-'Подготовка списка для загрузки входного контроля и список материалов
+'РџРѕРґРіРѕС‚РѕРІРєР° СЃРїРёСЃРєР° РґР»СЏ Р·Р°РіСЂСѓР·РєРё РІС…РѕРґРЅРѕРіРѕ РєРѕРЅС‚СЂРѕР»СЏ Рё СЃРїРёСЃРѕРє РјР°С‚РµСЂРёР°Р»РѕРІ
 Public Function GetDownLoadedList(ByRef sFilter$) As Object
     Dim q&, sKey$, dict As Object
     Set dict = CreateObject("Scripting.Dictionary")
@@ -93,15 +93,15 @@ Public Function GetDownLoadedList(ByRef sFilter$) As Object
         sKey = Trim(mass_data(q, idx_aosr_num))
         If sKey <> sFilter Then GoTo continue
         
-        'Список титулов
+        'РЎРїРёСЃРѕРє С‚РёС‚СѓР»РѕРІ
         sKey = mass_data(q, idx_title)
         If Not dict("ListTitle").exists(sKey) Then dict("ListTitle").Add key:=sKey, Item:=Empty
         
-        'Список dp
+        'РЎРїРёСЃРѕРє dp
         sKey = mass_data(q, idx_dp)
         If Not dict("ListDP").exists(sKey) Then dict("ListDP").Add key:=sKey, Item:=Empty
         
-        'Список элементов для реестра
+        'РЎРїРёСЃРѕРє СЌР»РµРјРµРЅС‚РѕРІ РґР»СЏ СЂРµРµСЃС‚СЂР°
         sKey = GetKeyElement(q)
         If Not dict_data.exists(sKey) Then dict_data.Add key:=sKey, Item:=tmpdict(q)
         
@@ -118,14 +118,14 @@ End Function
 Private Function tmpdict(q) As Object
     Set tmpdict = CreateObject("Scripting.Dictionary")
     With tmpdict
-        .Add key:=.Count, Item:=mass_data(q, idx_name)    'Наименование элемента
-        .Add key:=.Count, Item:=mass_data(q, idx_mark)    'Марка элемента
-        .Add key:=.Count, Item:=mass_data(q, idx_pos)     'Счетчик элемента
-        .Add key:=.Count, Item:=mass_data(q, idx_wght)    'Вес элемента
+        .Add key:=.Count, Item:=mass_data(q, idx_name)    'РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЌР»РµРјРµРЅС‚Р°
+        .Add key:=.Count, Item:=mass_data(q, idx_mark)    'РњР°СЂРєР° СЌР»РµРјРµРЅС‚Р°
+        .Add key:=.Count, Item:=mass_data(q, idx_pos)     'РЎС‡РµС‚С‡РёРє СЌР»РµРјРµРЅС‚Р°
+        .Add key:=.Count, Item:=mass_data(q, idx_wght)    'Р’РµСЃ СЌР»РµРјРµРЅС‚Р°
     End With
 End Function
 
-'Сопоставление данных ведомости с данными входного контроля
+'РЎРѕРїРѕСЃС‚Р°РІР»РµРЅРёРµ РґР°РЅРЅС‹С… РІРµРґРѕРјРѕСЃС‚Рё СЃ РґР°РЅРЅС‹РјРё РІС…РѕРґРЅРѕРіРѕ РєРѕРЅС‚СЂРѕР»СЏ
 Public Sub SearchInputControl(ByRef dict_ic As Object)
     Dim q&, iKey, dict As Object
     
@@ -146,18 +146,18 @@ continue:
     
 End Sub
 
-'Создание документа
+'РЎРѕР·РґР°РЅРёРµ РґРѕРєСѓРјРµРЅС‚Р°
 Public Sub CreateDocument(ByRef sFilter$, ByRef mass(), ByRef sFile$)
     
-    'Создание листа если его нет
-    Set SH = OtherFunction.CreateSheet(sFilter & "_АОСР_п3")
-    CreateHeader sFilter    'Создание шапки таблицы
+    'РЎРѕР·РґР°РЅРёРµ Р»РёСЃС‚Р° РµСЃР»Рё РµРіРѕ РЅРµС‚
+    Set SH = OtherFunction.CreateSheet(sFilter & "_РђРћРЎР _Рї3")
+    CreateHeader sFilter    'РЎРѕР·РґР°РЅРёРµ С€Р°РїРєРё С‚Р°Р±Р»РёС†С‹
     
     With SH.Range(L_PP & start_row).Resize(UBound(mass), UBound(mass, 2))
         OtherFunction.FormatCells .Offset, xlHAlignCenter, xlVAlignCenter, "Times New Roman", 14, Wrap:=True
         .Value = mass
         
-        'Форматирование созданной таблицы
+        'Р¤РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ СЃРѕР·РґР°РЅРЅРѕР№ С‚Р°Р±Р»РёС†С‹
         .Columns(L_Mat).Font.Italic = True
         .Columns(L_Doc).Font.Italic = True
         .Columns(L_Akt).Font.Italic = True
@@ -167,7 +167,7 @@ Public Sub CreateDocument(ByRef sFilter$, ByRef mass(), ByRef sFile$)
         
     End With
     
-    CreateFooter    'Создание подвала подписантов
+    CreateFooter    'РЎРѕР·РґР°РЅРёРµ РїРѕРґРІР°Р»Р° РїРѕРґРїРёСЃР°РЅС‚РѕРІ
     
     OtherFunction.BoldersCells SH.Range(L_PP & start_row).CurrentRegion, xlThin
     PrinterConfiguration
@@ -178,12 +178,12 @@ Public Sub CreateDocument(ByRef sFilter$, ByRef mass(), ByRef sFile$)
     
 End Sub
 
-'Массив вставляемой таблицы
+'РњР°СЃСЃРёРІ РІСЃС‚Р°РІР»СЏРµРјРѕР№ С‚Р°Р±Р»РёС†С‹
 Public Function GetMassRegistry()
     GetMassRegistry = GetMassData(dict_table)
 End Function
 
-'Формирование массива данных для вставки таблицы Реестр к п.3
+'Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РјР°СЃСЃРёРІР° РґР°РЅРЅС‹С… РґР»СЏ РІСЃС‚Р°РІРєРё С‚Р°Р±Р»РёС†С‹ Р РµРµСЃС‚СЂ Рє Рї.3
 Private Function dict_table() As Object
     Dim i, sKey$, dict As Object
     Set dict = CreateObject("Scripting.Dictionary")
@@ -197,8 +197,8 @@ Private Function dict_table() As Object
         With dict(sKey)
             .Add key:=.Count, Item:=Empty
             .Add key:=.Count, Item:=dict_data(i)(0) & " " & dict_data(i)(1)
-            .Add key:=.Count, Item:=GetNameDocQuality(dict_data(i)(6) & " от " & dict_data(i)(7) & "г.")
-            .Add key:=.Count, Item:=dict_data(i)(4) & Chr(10) & "от " & dict_data(i)(5) & "г."
+            .Add key:=.Count, Item:=GetNameDocQuality(dict_data(i)(6) & " РѕС‚ " & dict_data(i)(7) & "Рі.")
+            .Add key:=.Count, Item:=dict_data(i)(4) & Chr(10) & "РѕС‚ " & dict_data(i)(5) & "Рі."
         End With
 continue:
     Next
@@ -208,7 +208,7 @@ continue:
     
 End Function
 
-'Преобразование словаря в массив
+'РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ СЃР»РѕРІР°СЂСЏ РІ РјР°СЃСЃРёРІ
 Private Function GetMassData(ByRef dict As Object)
     Dim q&, w&, i
     ReDim mass(1 To dict.Count, 1 To 4)
@@ -222,7 +222,7 @@ Private Function GetMassData(ByRef dict As Object)
     GetMassData = mass
 End Function
 
-'хрен знает поиск серии номера или б/н
+'С…СЂРµРЅ Р·РЅР°РµС‚ РїРѕРёСЃРє СЃРµСЂРёРё РЅРѕРјРµСЂР° РёР»Рё Р±/РЅ
 Private Function GetNameDocQuality$(ByRef sTXT$)
     Dim q&
     q = InStr(1, sTXT, sSerial(sTXT), vbTextCompare)
@@ -230,19 +230,19 @@ Private Function GetNameDocQuality$(ByRef sTXT$)
     GetNameDocQuality = Trim(Left(sTXT, q)) & Chr(10) & Trim(Mid(sTXT, q))
 End Function
 
-'Регулярное выражение поиск серия или № и до конца строки
+'Р РµРіСѓР»СЏСЂРЅРѕРµ РІС‹СЂР°Р¶РµРЅРёРµ РїРѕРёСЃРє СЃРµСЂРёСЏ РёР»Рё в„– Рё РґРѕ РєРѕРЅС†Р° СЃС‚СЂРѕРєРё
 Private Function sSerial$(ByRef sTXT$)
     Dim objExec As Object
     With CreateObject("VBScript.RegExp")
-        .Global = True 'Поиск по всему тексту
+        .Global = True 'РџРѕРёСЃРє РїРѕ РІСЃРµРјСѓ С‚РµРєСЃС‚Сѓ
         .IgnoreCase = True
-        .Pattern = "\s+(серия|№|б/н).*" 'Шаблон поиска
+        .Pattern = "\s+(СЃРµСЂРёСЏ|в„–|Р±/РЅ).*" 'РЁР°Р±Р»РѕРЅ РїРѕРёСЃРєР°
         Set objExec = .Execute(sTXT)
     End With
     If objExec.Count = 1 Then sSerial = objExec.Item(0).Value
 End Function
 
-'Подвал таблицы
+'РџРѕРґРІР°Р» С‚Р°Р±Р»РёС†С‹
 Private Sub CreateFooter()
     Dim q&, addr$, iRow&
     
@@ -271,7 +271,7 @@ Private Sub CreateFooter()
     End With
 End Sub
 
-'Подпись под строкой
+'РџРѕРґРїРёСЃСЊ РїРѕРґ СЃС‚СЂРѕРєРѕР№
 Private Sub rows_UnderLine(ByRef iRow&)
     Dim addr$
     
@@ -282,13 +282,13 @@ Private Sub rows_UnderLine(ByRef iRow&)
             .RowHeight = 21
             .Font.Italic = True
             .Borders(xlEdgeTop).Weight = xlThin
-            .Value = "(фамилия, инициалы, подпись)"
+            .Value = "(С„Р°РјРёР»РёСЏ, РёРЅРёС†РёР°Р»С‹, РїРѕРґРїРёСЃСЊ)"
         End With
     End With
     
 End Sub
 
-'Ключ для словаря с элементами титул, dp, марка, наименование, позиция, вес
+'РљР»СЋС‡ РґР»СЏ СЃР»РѕРІР°СЂСЏ СЃ СЌР»РµРјРµРЅС‚Р°РјРё С‚РёС‚СѓР», dp, РјР°СЂРєР°, РЅР°РёРјРµРЅРѕРІР°РЅРёРµ, РїРѕР·РёС†РёСЏ, РІРµСЃ
 Private Property Get GetKeyElement$(ByRef q&)
     Dim sKey$
     sKey = mass_data(q, idx_title) & vbTab
@@ -300,46 +300,46 @@ Private Property Get GetKeyElement$(ByRef q&)
     GetKeyElement = sKey
 End Property
 
-'Формирование названий столбцов
+'Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РЅР°Р·РІР°РЅРёР№ СЃС‚РѕР»Р±С†РѕРІ
 Private Function dict_header() As Object
     Set dict_header = CreateObject("Scripting.Dictionary")
     With dict_header
-        .Add key:=.Count + 1, Item:="№" & Chr(10) & "п/п"
-        .Add key:=.Count + 1, Item:="Наименование материала"
-        .Add key:=.Count + 1, Item:="Наименование документов, подтверждающих качество и" & Chr(10) & _
-                                        "безопасность строительных материалов (изделий), номер и дата"
-        .Add key:=.Count + 1, Item:="№ акта о результатах проверки изделий на" & Chr(10) & _
-                                        "соответствие техдокументации, дата"
+        .Add key:=.Count + 1, Item:="в„–" & Chr(10) & "Рї/Рї"
+        .Add key:=.Count + 1, Item:="РќР°РёРјРµРЅРѕРІР°РЅРёРµ РјР°С‚РµСЂРёР°Р»Р°"
+        .Add key:=.Count + 1, Item:="РќР°РёРјРµРЅРѕРІР°РЅРёРµ РґРѕРєСѓРјРµРЅС‚РѕРІ, РїРѕРґС‚РІРµСЂР¶РґР°СЋС‰РёС… РєР°С‡РµСЃС‚РІРѕ Рё" & Chr(10) & _
+                                        "Р±РµР·РѕРїР°СЃРЅРѕСЃС‚СЊ СЃС‚СЂРѕРёС‚РµР»СЊРЅС‹С… РјР°С‚РµСЂРёР°Р»РѕРІ (РёР·РґРµР»РёР№), РЅРѕРјРµСЂ Рё РґР°С‚Р°"
+        .Add key:=.Count + 1, Item:="в„– Р°РєС‚Р° Рѕ СЂРµР·СѓР»СЊС‚Р°С‚Р°С… РїСЂРѕРІРµСЂРєРё РёР·РґРµР»РёР№ РЅР°" & Chr(10) & _
+                                        "СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ С‚РµС…РґРѕРєСѓРјРµРЅС‚Р°С†РёРё, РґР°С‚Р°"
     End With
 End Function
 
-'Шапка таблицы Приложение к акту освидетельствования скрытых работ
+'РЁР°РїРєР° С‚Р°Р±Р»РёС†С‹ РџСЂРёР»РѕР¶РµРЅРёРµ Рє Р°РєС‚Сѓ РѕСЃРІРёРґРµС‚РµР»СЊСЃС‚РІРѕРІР°РЅРёСЏ СЃРєСЂС‹С‚С‹С… СЂР°Р±РѕС‚
 Private Sub CreateHeader(ByRef sFilter$)
     Dim addr$, tmpstr$
     
-    'Ширина столбцов
+    'РЁРёСЂРёРЅР° СЃС‚РѕР»Р±С†РѕРІ
     OtherFunction.ColumnsWidth SH, 1, 8, 35, 85, 55
     
     With SH
     
-        'Высоты строк
+        'Р’С‹СЃРѕС‚С‹ СЃС‚СЂРѕРє
         .Rows("1:2").RowHeight = 20
         .Rows(3).RowHeight = 12
         .Rows(4).RowHeight = 40
         
-        'Заголовоки документа
+        'Р—Р°РіРѕР»РѕРІРѕРєРё РґРѕРєСѓРјРµРЅС‚Р°
         With .Range("A1:D1")
             OtherFunction.FormatCells .Offset, xlCenter, xlBottom, "Times New Roman", 14, Merge:=True, Bold:=True
-            .Value = "Реестр к п.4"
+            .Value = "Р РµРµСЃС‚СЂ Рє Рї.4"
         End With
         With .Range("A2:D2")
             OtherFunction.FormatCells .Offset, xlCenter, xlBottom, "Times New Roman", 14, Merge:=True, Bold:=False
-            tmpstr = "Приложение к акту освидетельствования ответственных конструкций " & sFilter
-            tmpstr = tmpstr & " от «" & String(4, "_") & "»" & String(12, "_") & "20___г."
+            tmpstr = "РџСЂРёР»РѕР¶РµРЅРёРµ Рє Р°РєС‚Сѓ РѕСЃРІРёРґРµС‚РµР»СЊСЃС‚РІРѕРІР°РЅРёСЏ РѕС‚РІРµС‚СЃС‚РІРµРЅРЅС‹С… РєРѕРЅСЃС‚СЂСѓРєС†РёР№ " & sFilter
+            tmpstr = tmpstr & " РѕС‚ В«" & String(4, "_") & "В»" & String(12, "_") & "20___Рі."
             .Value = tmpstr
         End With
         
-        'Заголовки таблицы
+        'Р—Р°РіРѕР»РѕРІРєРё С‚Р°Р±Р»РёС†С‹
         With .Range("A4:D4")
             OtherFunction.FormatCells .Offset, xlCenter, xlCenter, "Times New Roman", 14, Bold:=True
             .Value = dict_header.items
@@ -349,7 +349,7 @@ Private Sub CreateHeader(ByRef sFilter$)
     
 End Sub
 
-'настройки принтинга листа
+'РЅР°СЃС‚СЂРѕР№РєРё РїСЂРёРЅС‚РёРЅРіР° Р»РёСЃС‚Р°
 Private Sub PrinterConfiguration()
 
     Application.PrintCommunication = False
@@ -364,7 +364,7 @@ Private Sub PrinterConfiguration()
         .RightHeader = ""
         .LeftFooter = ""
         .CenterFooter = ""
-        .RightFooter = "Страница &P из &N"
+        .RightFooter = "РЎС‚СЂР°РЅРёС†Р° &P РёР· &N"
         .LeftMargin = Application.InchesToPoints(1)
         .RightMargin = Application.InchesToPoints(0.3)
         .TopMargin = Application.InchesToPoints(0.3)

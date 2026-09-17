@@ -10,50 +10,50 @@ Attribute VB_Exposed = False
 Option Explicit
 
 '======================================================
-'Класс для создания сводной таблицы по элементам
-'Все настройки сводной таблицы находятся здесь
+'РљР»Р°СЃСЃ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ СЃРІРѕРґРЅРѕР№ С‚Р°Р±Р»РёС†С‹ РїРѕ СЌР»РµРјРµРЅС‚Р°Рј
+'Р’СЃРµ РЅР°СЃС‚СЂРѕР№РєРё СЃРІРѕРґРЅРѕР№ С‚Р°Р±Р»РёС†С‹ РЅР°С…РѕРґСЏС‚СЃСЏ Р·РґРµСЃСЊ
 '======================================================
 
 
-'Настройки таблицы
+'РќР°СЃС‚СЂРѕР№РєРё С‚Р°Р±Р»РёС†С‹
 Private Const start_row As Byte = 4
 Private Const cnt_columns% = 21
 
-Private Const color_total& = XlRgbColor.rgbLightGray 'Цвет строки ИТОГО
+Private Const color_total& = XlRgbColor.rgbLightGray 'Р¦РІРµС‚ СЃС‚СЂРѕРєРё РРўРћР“Рћ
 
-'Индексы столбцов в словаре для сводной
+'РРЅРґРµРєСЃС‹ СЃС‚РѕР»Р±С†РѕРІ РІ СЃР»РѕРІР°СЂРµ РґР»СЏ СЃРІРѕРґРЅРѕР№
 Public Enum pivot_col
-    idx_pv_title    'Титул
-    idx_pv_all      'Всего
-    idx_pv_dlvr     'Поставлено
-    idx_pv_mount    'Вес, тонн/Смонт.
-    idx_pv_remain   'Вес, тонн/Остаток
+    idx_pv_title    'РўРёС‚СѓР»
+    idx_pv_all      'Р’СЃРµРіРѕ
+    idx_pv_dlvr     'РџРѕСЃС‚Р°РІР»РµРЅРѕ
+    idx_pv_mount    'Р’РµСЃ, С‚РѕРЅРЅ/РЎРјРѕРЅС‚.
+    idx_pv_remain   'Р’РµСЃ, С‚РѕРЅРЅ/РћСЃС‚Р°С‚РѕРє
     
-    idx_pv_geo_incomesmr    'Ведется СМР
-    idx_pv_geo_readphis     'Готовая физика под геодезию (съемка)
-    idx_pv_geo_survey       'Геодезическая съемка
-    idx_pv_geo_isdrawn      'ИГС отрисована
-    idx_pv_geo_underapp     'ИГС на согласовании
-    idx_pv_geo_agreed       'ИГС согласованы
+    idx_pv_geo_incomesmr    'Р’РµРґРµС‚СЃСЏ РЎРњР 
+    idx_pv_geo_readphis     'Р“РѕС‚РѕРІР°СЏ С„РёР·РёРєР° РїРѕРґ РіРµРѕРґРµР·РёСЋ (СЃСЉРµРјРєР°)
+    idx_pv_geo_survey       'Р“РµРѕРґРµР·РёС‡РµСЃРєР°СЏ СЃСЉРµРјРєР°
+    idx_pv_geo_isdrawn      'РР“РЎ РѕС‚СЂРёСЃРѕРІР°РЅР°
+    idx_pv_geo_underapp     'РР“РЎ РЅР° СЃРѕРіР»Р°СЃРѕРІР°РЅРёРё
+    idx_pv_geo_agreed       'РР“РЎ СЃРѕРіР»Р°СЃРѕРІР°РЅС‹
     
-    idx_pv_insp_vk_nodvlr   'Отсутствует RFI ВК на поставленные м/к
-    idx_pv_insp_vk_yesmount 'RFI ВК проведен на смонтиро-ванные м/к
-    idx_pv_insp_vk_nomount  'Отсутствует RFI ВК на смонтиро-ванные м/к
+    idx_pv_insp_vk_nodvlr   'РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ RFI Р’Рљ РЅР° РїРѕСЃС‚Р°РІР»РµРЅРЅС‹Рµ Рј/Рє
+    idx_pv_insp_vk_yesmount 'RFI Р’Рљ РїСЂРѕРІРµРґРµРЅ РЅР° СЃРјРѕРЅС‚РёСЂРѕ-РІР°РЅРЅС‹Рµ Рј/Рє
+    idx_pv_insp_vk_nomount  'РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ RFI Р’Рљ РЅР° СЃРјРѕРЅС‚РёСЂРѕ-РІР°РЅРЅС‹Рµ Рј/Рє
     
-    idx_pv_aorpi_yes    'ИГС на согласовании
-    idx_pv_aorpi_no     'ИГС согласованы
+    idx_pv_aorpi_yes    'РР“РЎ РЅР° СЃРѕРіР»Р°СЃРѕРІР°РЅРёРё
+    idx_pv_aorpi_no     'РР“РЎ СЃРѕРіР»Р°СЃРѕРІР°РЅС‹
     
-    idx_pv_rfi_app  'Заявлено по RFI (монтаж МК)
-    idx_pv_rfi_acc  'Принято по RFI (монтаж МК)
+    idx_pv_rfi_app  'Р—Р°СЏРІР»РµРЅРѕ РїРѕ RFI (РјРѕРЅС‚Р°Р¶ РњРљ)
+    idx_pv_rfi_acc  'РџСЂРёРЅСЏС‚Рѕ РїРѕ RFI (РјРѕРЅС‚Р°Р¶ РњРљ)
     
-    idx_pv_id_reg   'ИД на оформлении
-    idx_pv_id_app   'ИД на согласовании
-    idx_pv_id_acc   'ИД согласовано
+    idx_pv_id_reg   'РР” РЅР° РѕС„РѕСЂРјР»РµРЅРёРё
+    idx_pv_id_app   'РР” РЅР° СЃРѕРіР»Р°СЃРѕРІР°РЅРёРё
+    idx_pv_id_acc   'РР” СЃРѕРіР»Р°СЃРѕРІР°РЅРѕ
     
 End Enum
 
 
-'Переменные класса
+'РџРµСЂРµРјРµРЅРЅС‹Рµ РєР»Р°СЃСЃР°
 Private wght#
 Private sheet_row&
 Private mass_tb()
@@ -63,7 +63,7 @@ Private dict_mf As Object
 Private dict_ic As Object
 Private OtherFunction As New CL_OTHERFUN
 
-'Конструктор и деструктор класса
+'РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ Рё РґРµСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР°
 Private Sub Class_Terminate()
     Set dict_mf = Nothing
     Set dict_ic = Nothing
@@ -72,47 +72,47 @@ Private Sub Class_Terminate()
 End Sub
 
 
-'Объект рабочего листа с таблицей
+'РћР±СЉРµРєС‚ СЂР°Р±РѕС‡РµРіРѕ Р»РёСЃС‚Р° СЃ С‚Р°Р±Р»РёС†РµР№
 Public Property Get SH_PIVOT() As Excel.Worksheet
-    Set SH_PIVOT = Лист2
+    Set SH_PIVOT = Р›РёСЃС‚2
 End Property
 
-'Словарь с данными для сводной таблицы
+'РЎР»РѕРІР°СЂСЊ СЃ РґР°РЅРЅС‹РјРё РґР»СЏ СЃРІРѕРґРЅРѕР№ С‚Р°Р±Р»РёС†С‹
 Public Property Set DictDataMF(ByRef dict As Object)
     Set dict_mf = dict
 End Property
 
-'Словарь с данными входного контроля
+'РЎР»РѕРІР°СЂСЊ СЃ РґР°РЅРЅС‹РјРё РІС…РѕРґРЅРѕРіРѕ РєРѕРЅС‚СЂРѕР»СЏ
 Public Property Set DictDataIC(ByRef dict As Object)
     Set dict_ic = dict
 End Property
 
-'Массив данных таблицы ведомости элементов
+'РњР°СЃСЃРёРІ РґР°РЅРЅС‹С… С‚Р°Р±Р»РёС†С‹ РІРµРґРѕРјРѕСЃС‚Рё СЌР»РµРјРµРЅС‚РѕРІ
 Public Property Let MassDataTB(ByRef mass)
     mass_tb = mass
 End Property
 
 
-'Основная процедура обновления таблицы
+'РћСЃРЅРѕРІРЅР°СЏ РїСЂРѕС†РµРґСѓСЂР° РѕР±РЅРѕРІР»РµРЅРёСЏ С‚Р°Р±Р»РёС†С‹
 Public Sub UpdateTable()
     
-    Application.StatusBar = "Формирование сводной"
+    Application.StatusBar = "Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ СЃРІРѕРґРЅРѕР№"
     Debug.Print Application.StatusBar: DoEvents
     
     Application.ScreenUpdating = False
     
-    MakeDictPivot   'Формирование словаря с данными
-    SortData        'Сортировка данных
+    MakeDictPivot   'Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ СЃР»РѕРІР°СЂСЏ СЃ РґР°РЅРЅС‹РјРё
+    SortData        'РЎРѕСЂС‚РёСЂРѕРІРєР° РґР°РЅРЅС‹С…
     
-    CreateTabtle    'Создание заголовка
-    InsertData      'Вставка собранных данных
+    CreateTabtle    'РЎРѕР·РґР°РЅРёРµ Р·Р°РіРѕР»РѕРІРєР°
+    InsertData      'Р’СЃС‚Р°РІРєР° СЃРѕР±СЂР°РЅРЅС‹С… РґР°РЅРЅС‹С…
     
     Application.ScreenUpdating = True
     Application.StatusBar = False
     
 End Sub
 
-'Сортировка данных
+'РЎРѕСЂС‚РёСЂРѕРІРєР° РґР°РЅРЅС‹С…
 Private Sub SortData()
     Dim SRT As New CL_SORT
     SRT.SetSortOrder = set_ASC
@@ -120,7 +120,7 @@ Private Sub SortData()
     Set SRT = Nothing
 End Sub
 
-'Вставка собранных данных
+'Р’СЃС‚Р°РІРєР° СЃРѕР±СЂР°РЅРЅС‹С… РґР°РЅРЅС‹С…
 Private Sub InsertData()
     Dim iKey, cnt_dps&
     
@@ -133,17 +133,17 @@ Private Sub InsertData()
             cnt_dps = dict_mf(iKey).Count + 1
             ReDim mass_data(1 To cnt_dps, 1 To 21)
             
-            mass_data(1, 1) = iKey  'Имя листа из мастер файла
+            mass_data(1, 1) = iKey  'РРјСЏ Р»РёСЃС‚Р° РёР· РјР°СЃС‚РµСЂ С„Р°Р№Р»Р°
             
             ins_DpName dict_mf(iKey)
             
             With .Range("A" & sheet_row).Resize(cnt_dps, 21)
-                .Value = mass_data  'Вставка собранных данных
-                FormatTable .Offset 'Форматирование части таблицы
+                .Value = mass_data  'Р’СЃС‚Р°РІРєР° СЃРѕР±СЂР°РЅРЅС‹С… РґР°РЅРЅС‹С…
+                FormatTable .Offset 'Р¤РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ С‡Р°СЃС‚Рё С‚Р°Р±Р»РёС†С‹
                 OtherFunction.BoldersCells .Offset, xlThin
             End With
             
-            'Группирование, скрытие строк
+            'Р“СЂСѓРїРїРёСЂРѕРІР°РЅРёРµ, СЃРєСЂС‹С‚РёРµ СЃС‚СЂРѕРє
             With .Rows(sheet_row + 1 & ":" & sheet_row + cnt_dps - 1)
                 .Group
                 .EntireRow.Hidden = True
@@ -153,9 +153,9 @@ Private Sub InsertData()
             
         Next
     
-        'Итого
-        .Range("A" & sheet_row).Value = "ИТОГО"
-        .Range("B" & sheet_row).Resize(1, UBound(mass_sum_total)).Value = mass_sum_total 'Вставка данных ИТОГО
+        'РС‚РѕРіРѕ
+        .Range("A" & sheet_row).Value = "РРўРћР“Рћ"
+        .Range("B" & sheet_row).Resize(1, UBound(mass_sum_total)).Value = mass_sum_total 'Р’СЃС‚Р°РІРєР° РґР°РЅРЅС‹С… РРўРћР“Рћ
         With .Range("A" & sheet_row).Resize(1, UBound(mass_sum_total) + 1)
             .Range("A1").HorizontalAlignment = xlRight
             .Font.Italic = True
@@ -166,12 +166,12 @@ Private Sub InsertData()
     
     End With
     
-    MiniTable sheet_row     'Вставка мини-таблицы для тупых
-    Signature sheet_row     'Вставка поля подписантов в сводной
+    MiniTable sheet_row     'Р’СЃС‚Р°РІРєР° РјРёРЅРё-С‚Р°Р±Р»РёС†С‹ РґР»СЏ С‚СѓРїС‹С…
+    Signature sheet_row     'Р’СЃС‚Р°РІРєР° РїРѕР»СЏ РїРѕРґРїРёСЃР°РЅС‚РѕРІ РІ СЃРІРѕРґРЅРѕР№
     
 End Sub
 
-'Вставка имени dp
+'Р’СЃС‚Р°РІРєР° РёРјРµРЅРё dp
 Private Sub ins_DpName(ByRef dict As Object)
     Dim iKey, idx, q&
     q = 1
@@ -182,42 +182,42 @@ Private Sub ins_DpName(ByRef dict As Object)
     Next
 End Sub
 
-'Заполнение массиов данными весов материалов
+'Р—Р°РїРѕР»РЅРµРЅРёРµ РјР°СЃСЃРёРѕРІ РґР°РЅРЅС‹РјРё РІРµСЃРѕРІ РјР°С‚РµСЂРёР°Р»РѕРІ
 Private Sub ins_Value(ByRef q&, ByRef dict As Object)
     Dim idx
     For Each idx In dict
-        wght = WorksheetFunction.Round(dict(idx) / 1000, 3) 'Вес материала, округ. до 3 знаков
+        wght = WorksheetFunction.Round(dict(idx) / 1000, 3) 'Р’РµСЃ РјР°С‚РµСЂРёР°Р»Р°, РѕРєСЂСѓРі. РґРѕ 3 Р·РЅР°РєРѕРІ
         mass_data(q, idx + 1) = wght
         mass_data(1, idx + 1) = mass_data(1, idx + 1) + wght
         ins_TotalSheetValue idx
     Next
 End Sub
 
-'Расчет массива данных ИТОГО
+'Р Р°СЃС‡РµС‚ РјР°СЃСЃРёРІР° РґР°РЅРЅС‹С… РРўРћР“Рћ
 Private Sub ins_TotalSheetValue(ByRef idx)
     mass_sum_total(idx) = mass_sum_total(idx) + wght
 End Sub
 
 
-'Формирование словаря с данными
+'Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ СЃР»РѕРІР°СЂСЏ СЃ РґР°РЅРЅС‹РјРё
 Private Sub MakeDictPivot()
     Dim q&, sKey$, i_ic As Object, i_mf As Object
     
     For q = LBound(mass_tb) To UBound(mass_tb)
         
-        'Словарь сводной таблицы
-        '1. Титул (лист из мастер файла)
+        'РЎР»РѕРІР°СЂСЊ СЃРІРѕРґРЅРѕР№ С‚Р°Р±Р»РёС†С‹
+        '1. РўРёС‚СѓР» (Р»РёСЃС‚ РёР· РјР°СЃС‚РµСЂ С„Р°Р№Р»Р°)
         sKey = Trim(mass_tb(q, idx_sheet))
         If dict_mf.exists(sKey) Then Set i_mf = dict_mf(sKey) Else GoTo continue
             
-        '2. номер DP
+        '2. РЅРѕРјРµСЂ DP
         sKey = Trim(mass_tb(q, idx_dp))
         If sKey = "" Then sKey = "NO_DP"
         If i_mf.exists(sKey) Then Set i_mf = i_mf(sKey) Else GoTo continue
         
         wght = mass_tb(q, idx_wght)
         
-        'Данные входного контроля
+        'Р”Р°РЅРЅС‹Рµ РІС…РѕРґРЅРѕРіРѕ РєРѕРЅС‚СЂРѕР»СЏ
         sKey = GetKey(q)
         If Not dict_ic Is Nothing Then
             If dict_ic.exists(sKey) Then
@@ -226,7 +226,7 @@ Private Sub MakeDictPivot()
             End If
         End If
         
-        'Данные по исполнительной документации
+        'Р”Р°РЅРЅС‹Рµ РїРѕ РёСЃРїРѕР»РЅРёС‚РµР»СЊРЅРѕР№ РґРѕРєСѓРјРµРЅС‚Р°С†РёРё
         calc_pv_id q, i_mf
         
 continue:
@@ -234,38 +234,38 @@ continue:
     
 End Sub
 
-'Расчеты сводной таблицы в части исполнительной документации
+'Р Р°СЃС‡РµС‚С‹ СЃРІРѕРґРЅРѕР№ С‚Р°Р±Р»РёС†С‹ РІ С‡Р°СЃС‚Рё РёСЃРїРѕР»РЅРёС‚РµР»СЊРЅРѕР№ РґРѕРєСѓРјРµРЅС‚Р°С†РёРё
 Private Sub calc_pv_id(ByRef q&, ByRef i_mf As Object)
     
-    'Заявлено по RFI (монтаж МК)
+    'Р—Р°СЏРІР»РµРЅРѕ РїРѕ RFI (РјРѕРЅС‚Р°Р¶ РњРљ)
     If isInspSmuEx(q) Then
         i_mf(idx_pv_rfi_app) = i_mf(idx_pv_rfi_app) + wght
     Else
         i_mf(idx_pv_rfi_app) = i_mf(idx_pv_rfi_app) + 0
     End If
     
-    'Принято по RFI (монтаж МК)
+    'РџСЂРёРЅСЏС‚Рѕ РїРѕ RFI (РјРѕРЅС‚Р°Р¶ РњРљ)
     If isInspAccept(q) Then
         i_mf(idx_pv_rfi_acc) = i_mf(idx_pv_rfi_acc) + wght
     Else
         i_mf(idx_pv_rfi_acc) = i_mf(idx_pv_rfi_acc) + 0
     End If
     
-    'ИД на оформлении
+    'РР” РЅР° РѕС„РѕСЂРјР»РµРЅРёРё
     If isIdRegistration(q) Then
         i_mf(idx_pv_id_reg) = i_mf(idx_pv_id_reg) + wght
     Else
         i_mf(idx_pv_id_reg) = i_mf(idx_pv_id_reg) + 0
     End If
     
-    'ИД на согласовании
+    'РР” РЅР° СЃРѕРіР»Р°СЃРѕРІР°РЅРёРё
     If isIdApplication(q) Then
         i_mf(idx_pv_id_app) = i_mf(idx_pv_id_app) + wght
     Else
         i_mf(idx_pv_id_app) = i_mf(idx_pv_id_app) + 0
     End If
     
-    'ИД согласовано
+    'РР” СЃРѕРіР»Р°СЃРѕРІР°РЅРѕ
     If isIdAcception(q) Then
         i_mf(idx_pv_id_acc) = i_mf(idx_pv_id_acc) + wght
     Else
@@ -275,38 +275,38 @@ Private Sub calc_pv_id(ByRef q&, ByRef i_mf As Object)
 End Sub
 
 
-'Расчеты сводной таблицы в части входного контроля
+'Р Р°СЃС‡РµС‚С‹ СЃРІРѕРґРЅРѕР№ С‚Р°Р±Р»РёС†С‹ РІ С‡Р°СЃС‚Рё РІС…РѕРґРЅРѕРіРѕ РєРѕРЅС‚СЂРѕР»СЏ
 Private Sub calc_pv_ic(ByRef q&, ByRef i_ic As Object, ByRef i_mf As Object)
     
-    'Отсутствует RFI ВК на поставленные м/к
+    'РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ RFI Р’Рљ РЅР° РїРѕСЃС‚Р°РІР»РµРЅРЅС‹Рµ Рј/Рє
     If Not isInspExists(i_ic) Then
         i_mf(idx_pv_insp_vk_nodvlr) = i_mf(idx_pv_insp_vk_nodvlr) + wght
     Else
         i_mf(idx_pv_insp_vk_nodvlr) = i_mf(idx_pv_insp_vk_nodvlr) + 0
     End If
     
-    'RFI ВК проведен на смонтиро-ванные м/к
+    'RFI Р’Рљ РїСЂРѕРІРµРґРµРЅ РЅР° СЃРјРѕРЅС‚РёСЂРѕ-РІР°РЅРЅС‹Рµ Рј/Рє
     If isInspExists(i_ic) And isMount(q) Then
         i_mf(idx_pv_insp_vk_yesmount) = i_mf(idx_pv_insp_vk_yesmount) + wght
     Else
         i_mf(idx_pv_insp_vk_yesmount) = i_mf(idx_pv_insp_vk_yesmount) + 0
     End If
     
-    'Отсутствует RFI ВК на смонтиро-ванные м/к
+    'РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ RFI Р’Рљ РЅР° СЃРјРѕРЅС‚РёСЂРѕ-РІР°РЅРЅС‹Рµ Рј/Рє
     If Not isInspExists(i_ic) And isMount(q) Then
         i_mf(idx_pv_insp_vk_nomount) = i_mf(idx_pv_insp_vk_nomount) + wght
     Else
         i_mf(idx_pv_insp_vk_nomount) = i_mf(idx_pv_insp_vk_nomount) + 0
     End If
     
-    'АоРПИ на смонтиро-ванные м/к
+    'РђРѕР РџР РЅР° СЃРјРѕРЅС‚РёСЂРѕ-РІР°РЅРЅС‹Рµ Рј/Рє
     If isAorpiExists(i_ic) And isMount(q) Then
         i_mf(idx_pv_aorpi_yes) = i_mf(idx_pv_aorpi_yes) + wght
     Else
         i_mf(idx_pv_aorpi_yes) = i_mf(idx_pv_aorpi_yes) + 0
     End If
     
-    'Отсутствует АоРПИ на смонтиро-ванные м/к
+    'РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РђРѕР РџР РЅР° СЃРјРѕРЅС‚РёСЂРѕ-РІР°РЅРЅС‹Рµ Рј/Рє
     If Not isAorpiExists(i_ic) And isMount(q) Then
         i_mf(idx_pv_aorpi_no) = i_mf(idx_pv_aorpi_no) + wght
     Else
@@ -315,34 +315,34 @@ Private Sub calc_pv_ic(ByRef q&, ByRef i_ic As Object, ByRef i_mf As Object)
     
 End Sub
 
-'Булевые вычисления:
-Private Property Get isMount(ByRef q&) As Boolean           'элемент смонтирован
+'Р‘СѓР»РµРІС‹Рµ РІС‹С‡РёСЃР»РµРЅРёСЏ:
+Private Property Get isMount(ByRef q&) As Boolean           'СЌР»РµРјРµРЅС‚ СЃРјРѕРЅС‚РёСЂРѕРІР°РЅ
     isMount = IsDate(mass_tb(q, idx_date))
 End Property
-Private Property Get isInspExists(ByRef i_ic) As Boolean    'есть наименование инспекции rfi
+Private Property Get isInspExists(ByRef i_ic) As Boolean    'РµСЃС‚СЊ РЅР°РёРјРµРЅРѕРІР°РЅРёРµ РёРЅСЃРїРµРєС†РёРё rfi
     isInspExists = i_ic(idx_ic_insp) <> Empty
 End Property
-Private Property Get isAorpiExists(ByRef i_ic) As Boolean   'есть наименование аорпи
+Private Property Get isAorpiExists(ByRef i_ic) As Boolean   'РµСЃС‚СЊ РЅР°РёРјРµРЅРѕРІР°РЅРёРµ Р°РѕСЂРїРё
     isAorpiExists = i_ic(idx_ic_aorpi_name) <> Empty
 End Property
-Private Property Get isInspSmuEx(ByRef q&) As Boolean      'Инспекция по монтажу заявлена
+Private Property Get isInspSmuEx(ByRef q&) As Boolean      'РРЅСЃРїРµРєС†РёСЏ РїРѕ РјРѕРЅС‚Р°Р¶Сѓ Р·Р°СЏРІР»РµРЅР°
     isInspSmuEx = mass_tb(q, idx_insp_smu) <> Empty
 End Property
-Private Property Get isInspAccept(ByRef q&) As Boolean      'rfi монтажа принята
-    isInspAccept = InStr(1, mass_tb(q, idx_insp_stat_sk), "принят", vbTextCompare) = 1
+Private Property Get isInspAccept(ByRef q&) As Boolean      'rfi РјРѕРЅС‚Р°Р¶Р° РїСЂРёРЅСЏС‚Р°
+    isInspAccept = InStr(1, mass_tb(q, idx_insp_stat_sk), "РїСЂРёРЅСЏС‚", vbTextCompare) = 1
 End Property
-Private Property Get isIdRegistration(ByRef q&)             'ИД на оформлении
-    isIdRegistration = InStr(1, mass_tb(q, idx_aosr_stat), "оформлен", vbTextCompare) = 1
+Private Property Get isIdRegistration(ByRef q&)             'РР” РЅР° РѕС„РѕСЂРјР»РµРЅРёРё
+    isIdRegistration = InStr(1, mass_tb(q, idx_aosr_stat), "РѕС„РѕСЂРјР»РµРЅ", vbTextCompare) = 1
 End Property
-Private Property Get isIdApplication(ByRef q&)              'ИД на согласовании
-    isIdApplication = InStr(1, mass_tb(q, idx_aosr_stat), "на проверк", vbTextCompare) = 1
+Private Property Get isIdApplication(ByRef q&)              'РР” РЅР° СЃРѕРіР»Р°СЃРѕРІР°РЅРёРё
+    isIdApplication = InStr(1, mass_tb(q, idx_aosr_stat), "РЅР° РїСЂРѕРІРµСЂРє", vbTextCompare) = 1
 End Property
-Private Property Get isIdAcception(ByRef q&)                'ИД согласовано
-    isIdAcception = InStr(1, mass_tb(q, idx_aosr_stat), "согласован", vbTextCompare) = 1
+Private Property Get isIdAcception(ByRef q&)                'РР” СЃРѕРіР»Р°СЃРѕРІР°РЅРѕ
+    isIdAcception = InStr(1, mass_tb(q, idx_aosr_stat), "СЃРѕРіР»Р°СЃРѕРІР°РЅ", vbTextCompare) = 1
 End Property
 
 
-'Ключ: Титул, DP, Марка, Имя, Позиция, Вес
+'РљР»СЋС‡: РўРёС‚СѓР», DP, РњР°СЂРєР°, РРјСЏ, РџРѕР·РёС†РёСЏ, Р’РµСЃ
 Private Property Get GetKey$(ByRef q&)
     Dim sKey$
     sKey = mass_tb(q, idx_title) & vbTab
@@ -355,83 +355,83 @@ Private Property Get GetKey$(ByRef q&)
 End Property
 
 
-'Создание заголовка
+'РЎРѕР·РґР°РЅРёРµ Р·Р°РіРѕР»РѕРІРєР°
 Private Sub CreateTabtle()
     
-    SH_PIVOT.Cells.Delete 'УДАЛЕНИЕ ДАННЫХ СВОДНОЙ ТАБЛИЦЫ
+    SH_PIVOT.Cells.Delete 'РЈР”РђР›Р•РќРР• Р”РђРќРќР«РҐ РЎР’РћР”РќРћР™ РўРђР‘Р›РР¦Р«
     
-    'Ширина столбцов
+    'РЁРёСЂРёРЅР° СЃС‚РѕР»Р±С†РѕРІ
     OtherFunction.ColumnsWidth SH_PIVOT, 1, 40, 12, 12, 11, 11, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13
-    CreateHeader SH_PIVOT 'Имена столбцов
+    CreateHeader SH_PIVOT 'РРјРµРЅР° СЃС‚РѕР»Р±С†РѕРІ
         
     With SH_PIVOT
         
-        'Форматирование заголовков
+        'Р¤РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ Р·Р°РіРѕР»РѕРІРєРѕРІ
         With .Range("A2", .Cells(3, cnt_columns))
             OtherFunction.FormatCells .Offset, xlHAlignCenter, xlVAlignCenter, "Arial", 9, Bold:=True, Wrap:=True
             OtherFunction.BoldersCells .Offset, xlThin
         End With
         
-        .Rows("2:3").RowHeight = 25 'Высота строк
+        .Rows("2:3").RowHeight = 25 'Р’С‹СЃРѕС‚Р° СЃС‚СЂРѕРє
         
-        'Вставка примечаний
+        'Р’СЃС‚Р°РІРєР° РїСЂРёРјРµС‡Р°РЅРёР№
         With .Range("S2")
-            FormatComment .AddComment("Статус АОСР" & Chr(10) & """Оформление""")
+            FormatComment .AddComment("РЎС‚Р°С‚СѓСЃ РђРћРЎР " & Chr(10) & """РћС„РѕСЂРјР»РµРЅРёРµ""")
         End With
         
         With .Range("T2")
-            FormatComment .AddComment("Статус АОСР" & Chr(10) & """На проверке""")
+            FormatComment .AddComment("РЎС‚Р°С‚СѓСЃ РђРћРЎР " & Chr(10) & """РќР° РїСЂРѕРІРµСЂРєРµ""")
         End With
         
         With .Range("U2")
-            FormatComment .AddComment("Статус АОСР" & Chr(10) & """Согласован""")
+            FormatComment .AddComment("РЎС‚Р°С‚СѓСЃ РђРћРЎР " & Chr(10) & """РЎРѕРіР»Р°СЃРѕРІР°РЅ""")
         End With
         
-        'Сводка + вчерашняя дата в ячейке "A1"
+        'РЎРІРѕРґРєР° + РІС‡РµСЂР°С€РЅСЏСЏ РґР°С‚Р° РІ СЏС‡РµР№РєРµ "A1"
         With .Range("A1")
             OtherFunction.FormatCells .Offset, xlLeft, xlCenter, "Arial", 12, True, False, False
             .Offset.Font.Italic = True
-            .Value = "Сводка " & Format(Date - 1, "yyyy.mm.dd")
+            .Value = "РЎРІРѕРґРєР° " & Format(Date - 1, "yyyy.mm.dd")
         End With
         
     End With
 
 End Sub
 
-'Словарь с наименованиями столбцов и адресов ячеек
+'РЎР»РѕРІР°СЂСЊ СЃ РЅР°РёРјРµРЅРѕРІР°РЅРёСЏРјРё СЃС‚РѕР»Р±С†РѕРІ Рё Р°РґСЂРµСЃРѕРІ СЏС‡РµРµРє
 Private Function dict_header() As Object
     Set dict_header = CreateObject("Scripting.Dictionary")
     With dict_header
-        .Add key:="Титул", Item:="A2:A3"
-        .Add key:="Всего", Item:="B2:B3"
-        .Add key:="Поставлено", Item:="C2:C3"
-        .Add key:="Вес, тонн", Item:="D2:E2"
-        .Add key:="Смонт.", Item:="D3"
-        .Add key:="Остаток", Item:="E3"
+        .Add key:="РўРёС‚СѓР»", Item:="A2:A3"
+        .Add key:="Р’СЃРµРіРѕ", Item:="B2:B3"
+        .Add key:="РџРѕСЃС‚Р°РІР»РµРЅРѕ", Item:="C2:C3"
+        .Add key:="Р’РµСЃ, С‚РѕРЅРЅ", Item:="D2:E2"
+        .Add key:="РЎРјРѕРЅС‚.", Item:="D3"
+        .Add key:="РћСЃС‚Р°С‚РѕРє", Item:="E3"
         
-        .Add key:="Ведется СМР", Item:="F2:F3"
-        .Add key:="Готовая физика под геодезию (съемка)", Item:="G2:G3"
-        .Add key:="Геодезическая съемка", Item:="H2:H3"
-        .Add key:="ИГС отрисована", Item:="I2:I3"
-        .Add key:="ИГС на согласовании", Item:="J2:J3"
-        .Add key:="ИГС согласованы", Item:="K2:K3"
+        .Add key:="Р’РµРґРµС‚СЃСЏ РЎРњР ", Item:="F2:F3"
+        .Add key:="Р“РѕС‚РѕРІР°СЏ С„РёР·РёРєР° РїРѕРґ РіРµРѕРґРµР·РёСЋ (СЃСЉРµРјРєР°)", Item:="G2:G3"
+        .Add key:="Р“РµРѕРґРµР·РёС‡РµСЃРєР°СЏ СЃСЉРµРјРєР°", Item:="H2:H3"
+        .Add key:="РР“РЎ РѕС‚СЂРёСЃРѕРІР°РЅР°", Item:="I2:I3"
+        .Add key:="РР“РЎ РЅР° СЃРѕРіР»Р°СЃРѕРІР°РЅРёРё", Item:="J2:J3"
+        .Add key:="РР“РЎ СЃРѕРіР»Р°СЃРѕРІР°РЅС‹", Item:="K2:K3"
         
-        .Add key:="Отсутствует RFI ВК на поставленные м/к", Item:="L2:L3"
-        .Add key:="RFI ВК проведен на смонтиро-ванные м/к", Item:="M2:M3"
-        .Add key:="Отсутствует RFI ВК на смонтиро-ванные м/к", Item:="N2:N3"
+        .Add key:="РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ RFI Р’Рљ РЅР° РїРѕСЃС‚Р°РІР»РµРЅРЅС‹Рµ Рј/Рє", Item:="L2:L3"
+        .Add key:="RFI Р’Рљ РїСЂРѕРІРµРґРµРЅ РЅР° СЃРјРѕРЅС‚РёСЂРѕ-РІР°РЅРЅС‹Рµ Рј/Рє", Item:="M2:M3"
+        .Add key:="РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ RFI Р’Рљ РЅР° СЃРјРѕРЅС‚РёСЂРѕ-РІР°РЅРЅС‹Рµ Рј/Рє", Item:="N2:N3"
         
-        .Add key:="АоРПИ на смонтиро-ванные м/к", Item:="O2:O3"
-        .Add key:="Отсутствует АоРПИ на смонтиро-ванные м/к", Item:="P2:P3"
-        .Add key:="Заявлено по RFI (монтаж МК)", Item:="Q2:Q3"
-        .Add key:="Принято по RFI (монтаж МК)", Item:="R2:R3"
+        .Add key:="РђРѕР РџР РЅР° СЃРјРѕРЅС‚РёСЂРѕ-РІР°РЅРЅС‹Рµ Рј/Рє", Item:="O2:O3"
+        .Add key:="РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РђРѕР РџР РЅР° СЃРјРѕРЅС‚РёСЂРѕ-РІР°РЅРЅС‹Рµ Рј/Рє", Item:="P2:P3"
+        .Add key:="Р—Р°СЏРІР»РµРЅРѕ РїРѕ RFI (РјРѕРЅС‚Р°Р¶ РњРљ)", Item:="Q2:Q3"
+        .Add key:="РџСЂРёРЅСЏС‚Рѕ РїРѕ RFI (РјРѕРЅС‚Р°Р¶ РњРљ)", Item:="R2:R3"
         
-        .Add key:="ИД на оформлении", Item:="S2:S3"
-        .Add key:="ИД на согласовании", Item:="T2:T3"
-        .Add key:="ИД согласовано", Item:="U2:U3"
+        .Add key:="РР” РЅР° РѕС„РѕСЂРјР»РµРЅРёРё", Item:="S2:S3"
+        .Add key:="РР” РЅР° СЃРѕРіР»Р°СЃРѕРІР°РЅРёРё", Item:="T2:T3"
+        .Add key:="РР” СЃРѕРіР»Р°СЃРѕРІР°РЅРѕ", Item:="U2:U3"
     End With
 End Function
 
-'Вставка имен столбцов сводной по адресам из значений словаря
+'Р’СЃС‚Р°РІРєР° РёРјРµРЅ СЃС‚РѕР»Р±С†РѕРІ СЃРІРѕРґРЅРѕР№ РїРѕ Р°РґСЂРµСЃР°Рј РёР· Р·РЅР°С‡РµРЅРёР№ СЃР»РѕРІР°СЂСЏ
 Private Sub CreateHeader(ByRef SH As Excel.Worksheet)
     Dim iKey, addr$, dict As Object
     Set dict = dict_header
@@ -444,7 +444,7 @@ Private Sub CreateHeader(ByRef SH As Excel.Worksheet)
     Next
 End Sub
 
-'Мини таблица с итогами для тупых которые не могут посмотреть в строку ИТОГО
+'РњРёРЅРё С‚Р°Р±Р»РёС†Р° СЃ РёС‚РѕРіР°РјРё РґР»СЏ С‚СѓРїС‹С… РєРѕС‚РѕСЂС‹Рµ РЅРµ РјРѕРіСѓС‚ РїРѕСЃРјРѕС‚СЂРµС‚СЊ РІ СЃС‚СЂРѕРєСѓ РРўРћР“Рћ
 Private Sub MiniTable(ByRef cnt_row&)
 
     Dim addr$, dict As Object
@@ -453,20 +453,20 @@ Private Sub MiniTable(ByRef cnt_row&)
     cnt_row = cnt_row + 3
     
     With dict
-        .Add key:=.Count, Item:="Всего смонтированно:"
-        .Add key:=.Count, Item:="Комплекс смр (не завершен смр для съемки):"
-        .Add key:=.Count, Item:="Готово под геодезию (съемка):"
-        .Add key:=.Count, Item:="Выполнена геодезия (съемка):"
-        .Add key:=.Count, Item:="Геодезия не требуется:"
+        .Add key:=.Count, Item:="Р’СЃРµРіРѕ СЃРјРѕРЅС‚РёСЂРѕРІР°РЅРЅРѕ:"
+        .Add key:=.Count, Item:="РљРѕРјРїР»РµРєСЃ СЃРјСЂ (РЅРµ Р·Р°РІРµСЂС€РµРЅ СЃРјСЂ РґР»СЏ СЃСЉРµРјРєРё):"
+        .Add key:=.Count, Item:="Р“РѕС‚РѕРІРѕ РїРѕРґ РіРµРѕРґРµР·РёСЋ (СЃСЉРµРјРєР°):"
+        .Add key:=.Count, Item:="Р’С‹РїРѕР»РЅРµРЅР° РіРµРѕРґРµР·РёСЏ (СЃСЉРµРјРєР°):"
+        .Add key:=.Count, Item:="Р“РµРѕРґРµР·РёСЏ РЅРµ С‚СЂРµР±СѓРµС‚СЃСЏ:"
         
-        .Add key:=.Count, Item:="Отрисовано схем (накопительно):"
-        .Add key:=.Count, Item:="Требуется согласование геодезии:"
-        .Add key:=.Count, Item:="ИГС согласованы:"
+        .Add key:=.Count, Item:="РћС‚СЂРёСЃРѕРІР°РЅРѕ СЃС…РµРј (РЅР°РєРѕРїРёС‚РµР»СЊРЅРѕ):"
+        .Add key:=.Count, Item:="РўСЂРµР±СѓРµС‚СЃСЏ СЃРѕРіР»Р°СЃРѕРІР°РЅРёРµ РіРµРѕРґРµР·РёРё:"
+        .Add key:=.Count, Item:="РР“РЎ СЃРѕРіР»Р°СЃРѕРІР°РЅС‹:"
         
-        .Add key:=.Count, Item:="Заявлено RFI (монтаж):"
-        .Add key:=.Count, Item:="Сдано под RFI (монтаж):"
-        .Add key:=.Count, Item:="Отсутствует RFI ВК на смонтированные м/к:"
-        .Add key:=.Count, Item:="Отсутствует ВК (АоРПИ):"
+        .Add key:=.Count, Item:="Р—Р°СЏРІР»РµРЅРѕ RFI (РјРѕРЅС‚Р°Р¶):"
+        .Add key:=.Count, Item:="РЎРґР°РЅРѕ РїРѕРґ RFI (РјРѕРЅС‚Р°Р¶):"
+        .Add key:=.Count, Item:="РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ RFI Р’Рљ РЅР° СЃРјРѕРЅС‚РёСЂРѕРІР°РЅРЅС‹Рµ Рј/Рє:"
+        .Add key:=.Count, Item:="РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ Р’Рљ (РђРѕР РџР):"
         
     End With
     
@@ -474,7 +474,7 @@ Private Sub MiniTable(ByRef cnt_row&)
         
         addr = "B" & cnt_row
         OtherFunction.FormatCells .Range(addr), xlCenter, xlCenter, "Times New Roman", 11, Bold:=False
-        .Range(addr).Value = "объем в т."
+        .Range(addr).Value = "РѕР±СЉРµРј РІ С‚."
         cnt_row = cnt_row + 1
         
         addr = "A" & cnt_row & ":A" & cnt_row + dict.Count - 1
@@ -484,75 +484,75 @@ Private Sub MiniTable(ByRef cnt_row&)
         addr = "B" & cnt_row & ":B" & cnt_row + dict.Count - 1
         OtherFunction.FormatCells .Range(addr), xlCenter, xlCenter, "Arial", 11, Bold:=True
         
-        'Всего смонтированно:
+        'Р’СЃРµРіРѕ СЃРјРѕРЅС‚РёСЂРѕРІР°РЅРЅРѕ:
         With .Range(addr).Cells(1)
-            .Value = mass_sum_total(3) 'Порядковый номер итоговой строки (Итого=1,Всего=2, и т.д.)
-            ColoRowsPivot .Offset, rgbAliceBlue 'Цвет выделения ячеек
+            .Value = mass_sum_total(3) 'РџРѕСЂСЏРґРєРѕРІС‹Р№ РЅРѕРјРµСЂ РёС‚РѕРіРѕРІРѕР№ СЃС‚СЂРѕРєРё (РС‚РѕРіРѕ=1,Р’СЃРµРіРѕ=2, Рё С‚.Рґ.)
+            ColoRowsPivot .Offset, rgbAliceBlue 'Р¦РІРµС‚ РІС‹РґРµР»РµРЅРёСЏ СЏС‡РµРµРє
         End With
         
-        'Комплекс смр (не завершен смр для съемки):
+        'РљРѕРјРїР»РµРєСЃ СЃРјСЂ (РЅРµ Р·Р°РІРµСЂС€РµРЅ СЃРјСЂ РґР»СЏ СЃСЉРµРјРєРё):
         With .Range(addr).Cells(2)
             .Value = mass_sum_total(5)
             ColoRowsPivot .Offset, rgbAliceBlue
         End With
         
-        'Готово под геодезию (съемка):
+        'Р“РѕС‚РѕРІРѕ РїРѕРґ РіРµРѕРґРµР·РёСЋ (СЃСЉРµРјРєР°):
         With .Range(addr).Cells(3)
             .Value = mass_sum_total(6)
             ColoRowsPivot .Offset, rgbAliceBlue
         End With
         
-        'Выполнена геодезия (съемка):
+        'Р’С‹РїРѕР»РЅРµРЅР° РіРµРѕРґРµР·РёСЏ (СЃСЉРµРјРєР°):
         With .Range(addr).Cells(4)
             .Value = mass_sum_total(7)
             ColoRowsPivot .Offset, rgbAliceBlue
         End With
         
-        'Геодезия не требуется:
+        'Р“РµРѕРґРµР·РёСЏ РЅРµ С‚СЂРµР±СѓРµС‚СЃСЏ:
         With .Range(addr).Cells(5)
-            .EntireRow.Hidden = True    'Скрыть строку
+            .EntireRow.Hidden = True    'РЎРєСЂС‹С‚СЊ СЃС‚СЂРѕРєСѓ
             .Value = 0
             ColoRowsPivot .Offset, rgbBeige
         End With
         
-        'Отрисовано схем (накопительно):
+        'РћС‚СЂРёСЃРѕРІР°РЅРѕ СЃС…РµРј (РЅР°РєРѕРїРёС‚РµР»СЊРЅРѕ):
         With .Range(addr).Cells(6)
             .Value = mass_sum_total(8)
             ColoRowsPivot .Offset, rgbBeige
         End With
         
-        'Требуется согласование геодезии:
+        'РўСЂРµР±СѓРµС‚СЃСЏ СЃРѕРіР»Р°СЃРѕРІР°РЅРёРµ РіРµРѕРґРµР·РёРё:
         With .Range(addr).Cells(7)
             .Value = mass_sum_total(9)
             ColoRowsPivot .Offset, rgbBeige
         End With
         
-        'ИГС согласованы:
+        'РР“РЎ СЃРѕРіР»Р°СЃРѕРІР°РЅС‹:
         With .Range(addr).Cells(8)
             .Value = mass_sum_total(10)
             ColoRowsPivot .Offset, rgbBeige
         End With
         
-        'Сдано под RFI (монтаж):
+        'РЎРґР°РЅРѕ РїРѕРґ RFI (РјРѕРЅС‚Р°Р¶):
         With .Range(addr).Cells(9)
             .Value = mass_sum_total(16)
             ColoRowsPivot .Offset, rgbLightGray
         End With
         
-        'Заявлено RFI (монтаж):
+        'Р—Р°СЏРІР»РµРЅРѕ RFI (РјРѕРЅС‚Р°Р¶):
         With .Range(addr).Cells(10)
             .Value = mass_sum_total(17)
             ColoRowsPivot .Offset, rgbLightGray
         End With
         
         
-        'Отсутствует RFI ВК на смонтированные м/к:
+        'РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ RFI Р’Рљ РЅР° СЃРјРѕРЅС‚РёСЂРѕРІР°РЅРЅС‹Рµ Рј/Рє:
         With .Range(addr).Cells(11)
             .Value = mass_sum_total(13)
             ColoRowsPivot .Offset, rgbLightGray
         End With
         
-        'Отсутствует ВК (АоРПИ):
+        'РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ Р’Рљ (РђРѕР РџР):
         With .Range(addr).Cells(12)
             .Value = mass_sum_total(15)
             ColoRowsPivot .Offset, rgbLightGray
@@ -563,7 +563,7 @@ Private Sub MiniTable(ByRef cnt_row&)
     
 End Sub
 
-'Закрашивание строк в мини табличке под сводной
+'Р—Р°РєСЂР°С€РёРІР°РЅРёРµ СЃС‚СЂРѕРє РІ РјРёРЅРё С‚Р°Р±Р»РёС‡РєРµ РїРѕРґ СЃРІРѕРґРЅРѕР№
 Private Sub ColoRowsPivot(ByRef RG_value As Range, ByRef i_color)
     With RG_value
         .Interior.Color = i_color
@@ -581,7 +581,7 @@ Private Sub Signature(ByRef cnt_row)
     End With
 End Sub
 
-'Функция форматирование части таблицы выружаемой сводной
+'Р¤СѓРЅРєС†РёСЏ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ С‡Р°СЃС‚Рё С‚Р°Р±Р»РёС†С‹ РІС‹СЂСѓР¶Р°РµРјРѕР№ СЃРІРѕРґРЅРѕР№
 Private Sub FormatTable(ByRef RG As Range)
     With RG
         .Columns("A").HorizontalAlignment = xlHAlignRight
@@ -590,7 +590,7 @@ Private Sub FormatTable(ByRef RG As Range)
     End With
 End Sub
 
-'Функция форматирования комментариев
+'Р¤СѓРЅРєС†РёСЏ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ РєРѕРјРјРµРЅС‚Р°СЂРёРµРІ
 Private Sub FormatComment(ByRef objComm As Excel.Comment)
     With objComm.Shape
         .Width = 100
@@ -601,7 +601,7 @@ Private Sub FormatComment(ByRef objComm As Excel.Comment)
     End With
 End Sub
 
-'Настройки принтинга листа
+'РќР°СЃС‚СЂРѕР№РєРё РїСЂРёРЅС‚РёРЅРіР° Р»РёСЃС‚Р°
 Private Sub PrinterConfiguration(ByRef SH As Worksheet)
 
     Application.PrintCommunication = False
@@ -615,7 +615,7 @@ Private Sub PrinterConfiguration(ByRef SH As Worksheet)
         .CenterHeader = ""
         .RightHeader = ""
         .LeftFooter = ""
-        .CenterFooter = "Страница &P из &N"
+        .CenterFooter = "РЎС‚СЂР°РЅРёС†Р° &P РёР· &N"
         .RightFooter = ""
         .LeftMargin = Application.InchesToPoints(0.2)
         .RightMargin = Application.InchesToPoints(0.2)
@@ -657,7 +657,7 @@ Private Sub PrinterConfiguration(ByRef SH As Worksheet)
         .FirstPage.RightFooter.Text = ""
     End With
     
-    Const txt$ = "&""Yu Gothic UI Light,обычный"" &7 &K08+059 Отчет от &D_&T --> ©" & "Автор макроса: Антон Валерьевич Собянин, редактор: Саидахмедов Бехруз Баходурович email: behruz1229@gmail.com, whatsapp: +7 (996) 322 00 24"
+    Const txt$ = "&""Yu Gothic UI Light,РѕР±С‹С‡РЅС‹Р№"" &7 &K08+059 РћС‚С‡РµС‚ РѕС‚ &D_&T --> В©" & "РђРІС‚РѕСЂ РјР°РєСЂРѕСЃР°: РђРЅС‚РѕРЅ Р’Р°Р»РµСЂСЊРµРІРёС‡ РЎРѕР±СЏРЅРёРЅ, СЂРµРґР°РєС‚РѕСЂ: РЎР°РёРґР°С…РјРµРґРѕРІ Р‘РµС…СЂСѓР· Р‘Р°С…РѕРґСѓСЂРѕРІРёС‡ email: behruz1229@gmail.com, whatsapp: +7 (996) 322 00 24"
     SH.PageSetup.RightHeader = txt
     On Error GoTo en
     Application.PrintCommunication = True
