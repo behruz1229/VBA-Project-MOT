@@ -12,7 +12,7 @@ Option Explicit
 
 'Настройки таблицы геодезического контроля
 Private Const mask_file$ = "реестр геодезия"
-Private Const sFolder$ = "C:\Users\SobyaninAV\Desktop"
+Private Const sFolder$ = "~\Desktop"
 
 Private Const sheet_name$ = "Реестр"    'Имя листа на которой таблица
 Private Const start_row As Byte = 38    '
