@@ -12,7 +12,7 @@ Option Explicit
 
 'Настройки таблицы мастер файла:
 Private Const mask_file$ = "МОТ - Монтаж МК - Мастер файл"
-Private Const sFolder$ = "\\vls.lan\ULVZG-DFS\ПТС\1.14. ТСБ и МОТ_Исполнительная документация КМ\!Ведомость элементов"
+Private Const sFolder$ = "~\!Ведомость элементов"
 
 'Столбцы мастер файла
 Private Const N_MF_DP% = 1          'DP
